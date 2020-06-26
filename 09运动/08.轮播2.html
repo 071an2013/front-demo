@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        div,ul,li{
+            margin: 0;padding: 0;
+        }
+        .banner{
+            width: 400px;height: 200px;border: 3px solid rgb(250, 132, 132);margin: 100px auto;
+            position: relative;overflow: hidden;
+        }
+        .banner ul{
+            list-style: none;
+         }
+         .banner .content{
+            position: absolute; left: 0px;
+         }
+        .banner .content li{
+            width: 400px;height: 200px;line-height: 200px;background: cornflowerblue;font-size:32px;text-align: center;
+            float: left;
+        }
+        .banner .content .current{
+            display: block;
+        }
+        .banner .radius-btn{
+            position: absolute;left: 0;bottom: 8px;
+        }
+        .banner .radius-btn span{
+            width: 10px; height: 10px;background:rgba(0,0,0,0.5);float: left;border-radius: 50%;cursor: pointer;
+             margin: 0 4px;
+        }
+        .banner .radius-btn .current{
+            background: #fff;
+        }
+        .slide-btn span{
+            display:block;width:20px;height:25px;background:rgba(0,0,0,0.6);color:#fff;font-size:16px;
+	        line-height:25px;cursor:pointer;text-align: center;opacity: 0.2;
+        }
+        .slide-btn .prev{
+            /* border-top-right-radius: 50%; border-bottom-right-radius: 50%; */
+            position: absolute; top: 50%;margin-top: -10px;
+        }
+        .slide-btn .next{
+            /* border-top-left-radius: 50%;border-bottom-left-radius: 50%; */
+            position: absolute; top: 50%; right: 0;margin-top: -10px;
+        }
+    </style>
+    <script src="./yundong.js"></script>
+</head>
+<body>
+
+    <div class="banner">
+        <ul class="content">
+            <li>111111111你你你你你你1</li>
+            <li>2222222222哈哈哈哈哈2</li>
+            <li>333333333嘻嘻嘻嘻嘻嘻3</li>
+        </ul>
+        <div class="radius-btn">
+            <span class="current"></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="slide-btn">
+            <span class="prev">&lt;</span>
+            <span class="next">&gt;</span>
+        </div>
+    </div>
+
+    <script>
+        //轮播框banner
+        var banner = document.querySelector(".banner");
+        //轮播内容
+        var ulBox = document.querySelector(".content");
+
+        //复制第一个li到最后
+        var firstLi = ulBox.firstElementChild;   
+        var clonedNode = firstLi.cloneNode(true); // 克隆节点  
+        ulBox.appendChild(clonedNode); // 在父节点插入克隆的节点   
+        //获取li
+        var li = ulBox.querySelectorAll("li");
+        //圆点按钮
+        var radius = document.querySelector(".radius-btn");
+        var dots = radius.querySelectorAll("span");
+        //左右按钮
+        var prev = document.querySelector(".prev");
+        var next = document.querySelector(".next");
+	   
+        //li 宽度
+        var liWidth = li[0].offsetWidth;
+        
+        //设置ul宽度
+        ulBox.style.width = liWidth * li.length + "px";
+        
+        //定义定时器
+        var n = 0; 
+        var timer = setInterval(function () {
+                autoPlay();
+            }, 2000);
+
+        /*
+        *分析：
+        *  n:   0    1    2    3       0    运动，最后一个运动完立马跳到0
+        * li:   0    1    2  （3）=>   0      li索引
+        * li:   1    2    3  （4）     1     第几个li，当显示第4个li时，跳到第一个
+        * ⚪：  0    1    2    0      0       ⚪索引比li少一个
+        * 
+        *  ① n == li.length :表示li是最后一个子元素
+        *  ② 而一个li运动结束时，显示的是他下一个li ：n == li.length-1;
+        *   以上两种情况，都需要跳到第一个li
+        */    
+        function autoPlay(){
+
+            n++;
+            // 快速点击下翻页按钮，运动里面的 n=0,还没执行，就会导致n>li.length,
+            //如果判断 n = li.length-1，会导致最后一个动态添加的li运动不到就直接跳到第一个
+            if(n == li.length){
+                n = 0;
+                ulBox.style.left = "0px";
+            }
+            //li
+            startMove(ulBox, "left", -liWidth * n,function(){
+                 //当li倒数第二个运动结束时，其实显示的是最后一个动态添加的li,当显示完最后一个li时，就跳到第一个li
+                if( n == li.length-1){
+                    ulBox.style.left = "0px";
+                    n=0;
+                }
+            });
+            
+            //先清除所有圆点样式
+            for (var i = 0; i < dots.length; i++) {//length -1 : 去掉最后一个添加的li
+                dots[i].className = "";
+            }
+            //因为圆点按钮比li少一个，当
+            console.log(n);
+            if (n == li.length-1) {
+                dots[0].className = "current";
+            }else{
+                dots[n].className = "current";
+            }
+            
+        };
+
+        //移入banner停止定时器
+        banner.onmouseover = function () {
+            clearInterval(timer);
+            //左右按钮透明度
+            prev.style.opacity = 1;
+            next.style.opacity = 1;
+        }
+        //移出banner开启定时器
+        banner.onmouseout = function () {
+            timer = setInterval(autoPlay, 2000);
+            //左右按钮透明度
+            prev.style.opacity = 0.2;
+            next.style.opacity = 0.2;
+        }
+
+        //点击圆点按钮
+        for (var i = 0; i < dots.length; i++) {
+            //保存i
+            dots[i].num = i;
+            dots[i].onclick = function () {
+                //移除时 n 改从当前点击的开始
+                n = this.num;
+                //先清除所有圆点样式
+                for (var i = 0; i < li.length - 1; i++) {//length -1 : 去掉最后一个添加的li
+                    dots[i].className = "";
+                }
+               //ul
+                ulBox.style.left = n * -liWidth + "px";
+                //圆点
+                this.className = "current";
+            }
+        }
+
+        //点击左按钮
+        prev.onclick = function () {
+            n--;
+            if (n == -1) {
+                n = li.length - 2;
+            }
+            startMove(ulBox, "left", -liWidth * n,function(){
+                if( n == li.length-1){
+                    ulBox.style.left = "0px";
+                    n = 0;
+                }
+            });
+            //先清除所有圆点样式
+            for (var i = 0; i < li.length - 1; i++) {//length -1 : 去掉最后一个添加的li
+                dots[i].className = "";
+            }
+            //ul
+            //ulBox.style.left = n * -liWidth + "px";
+            //圆点
+            dots[n].className = "current";
+        }
+    
+        //点击右按钮
+        next.onclick = function () {
+            autoPlay();
+            
+        }
+        
+    </script>
+</body>
+</html>

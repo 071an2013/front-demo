@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        div,ul,li{
+            margin: 0;padding: 0;
+        }
+        .banner{
+            width: 400px;height: 200px;border: 1px solid rgb(250, 132, 132);margin: 100px auto;position: relative;
+        }
+        .banner ul{
+            list-style: none;
+        }
+        .banner .content li{
+            height: 200px;line-height: 200px;background: cornflowerblue;font-size:32px;text-align: center;display: none;
+        }
+        .banner .content .current{
+            display: block;
+        }
+        .banner .btn{
+            position: absolute;left: 0;bottom: 8px;
+        }
+        .banner .btn span{
+            width: 10px; height: 10px;background:rgba(0,0,0,0.5);float: left;border-radius: 50%;cursor: pointer;
+             margin: 0 4px;
+        }
+        .banner .btn .current{
+            background: #fff;
+        }
+        .slide-btn span{
+            display:block;width:20px;height:25px;background:rgba(0,0,0,0.6);color:#fff;font-size:16px;
+	        line-height:25px;cursor:pointer;text-align: center;
+        }
+        .slide-btn .prev{
+            /* border-top-right-radius: 50%; border-bottom-right-radius: 50%; */
+            position: absolute; top: 50%;margin-top: -10px;
+        }
+        .slide-btn .next{
+            /* border-top-left-radius: 50%;border-bottom-left-radius: 50%; */
+            position: absolute; top: 50%; right: 0;margin-top: -10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="banner">
+        <ul class="content">
+            <li class="current">1</li>
+            <li>2</li>
+            <li>3</li>
+        </ul>
+        <div class="btn">
+            <span class="current"></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="slide-btn">
+            <span class="prev">&lt;</span>
+            <span class="next">&gt;</span>
+        </div>
+    </div>
+
+    <script>
+        //banner
+        var banner = document.querySelector(".banner");
+        //轮播内容
+        var content = document.querySelector(".content");
+        var li = content.querySelectorAll("li");
+        //按钮
+        var btn = document.querySelector(".btn");
+        var span = btn.querySelectorAll("span");
+
+        var n = 0;
+        function autoPlay(){
+            n++;
+            if(n == li.length){
+                n = 0;
+            }
+            //先清除所有
+            for (var i = 0; i < li.length; i++) {
+                li[i].className = "";
+                span[i].className = "";
+            }
+            li[n].className = "current";
+            span[n].className = "current";
+
+        }
+
+    //定义定时器
+    var timer = setInterval(autoPlay, 1000);
+
+    //移入banner停止定时器
+    banner.onmouseover = function () {
+        clearInterval(timer);
+    }
+    //移出banner开启定时器
+    banner.onmouseout = function () {
+        timer = setInterval(autoPlay, 1000);
+    }
+    
+    //点击圆点按钮
+    for (var i = 0; i < span.length; i++) {
+        //保存i
+        span[i].num = i;
+        span[i].onclick = function () {
+            //移除时 n 改从当前点击的开始
+            n = this.num;
+            //先清除所有
+            for (var j = 0; j < li.length; j++) {
+                li[j].className = "";
+                span[j].className = "";
+            }
+            li[this.num].className = "current";
+            this.className = "current";
+        }
+    }
+
+    //点击左按钮
+    var prev = document.querySelector(".prev");
+    prev.onclick = function () {
+        n--;
+        if(n == -1){
+            n = li.length - 1;
+        }
+        //先清除所有
+        for (var i = 0; i < li.length; i++) {
+            li[i].className = "";
+            span[i].className = "";
+        }
+        li[n].className = "current";
+        span[n].className = "current";
+    }
+    //点击右按钮
+    var next = document.querySelector(".next");
+    next.onclick = function () {
+        autoPlay();
+    }
+        
+    </script>
+</body>
+</html>
