@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="js/jquery.js"></script>
+    <style>
+        body,ul,li{
+            margin: 0px;padding:0px;
+        }
+        .imgBox{
+            position:relative;width: 1000px;height: 460px;
+        }
+        #box1,#box2 {
+            position:absolute;top:30px;
+        }
+        #box1 {
+            left:50px;
+            width:418px;height:418px;border: 1px solid rgba(0,0,0,.05);
+            text-align: center;vertical-align: middle;
+        }
+        #box2 {
+            display:none;left:480px;overflow:hidden; width:418px;height:418px;
+            border:1px solid #ccc;
+        }
+        #mark {
+            display:none;position:absolute;top: 0; left: 0;opacity:0.4;
+            /* width:218.405px;height:218.405px; */
+            filter:alpha(opacity=40);/* ie8及以下的透明度写法 */
+            cursor:move;background-color:#09f;
+        }
+        #box1 img {
+            max-width: 100%;max-height: 100%;
+        }
+        #box2 img {
+            position:absolute;
+        }
+
+
+        ul{
+            list-style: none;
+            padding: 0 50px;width: 418px;
+        }
+        ul li{
+            float: left;margin-right: 10px;width: 60px;height: 60px;
+        }
+        ul li img{
+            max-width: 60px;
+            max-height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="imgBox">
+        <div id="box1">
+            <img src="../11lg/images/O1CN_430x430.jpg" alt="手指算法">
+            <div id="mark"></div>
+        </div>
+        <div id="box2">
+            <img src="../11lg/images/O1CN_800x800.jpg">
+        </div>
+    </div>
+    <div>
+        <ul class="thumb-content">
+            <li>
+                <img src="../11lg/images/O1CN_60x60.jpg" alt="">
+            </li>
+            <li>
+                <img src="../11lg/images/O1CN0_60x60.jpg" alt="手指算法">
+            </li>
+            <li>
+                <img src="../11lg/images/O1CN01X_60x60.jpg" alt="">
+            </li>
+        </ul>
+    </div>
+    
+<script>
+    /* 
+        图片可大可小，
+        放大区域根据图片大小自动缩放，
+        遮罩根据图片大小自动缩放，
+        遮罩区域根据图片大小自动缩放
+    */
+    function Zoomhover($img1, $mark, $img2, $box1,$box2) {
+        $img1.add($mark).on("mouseover",function (e) {
+                //首先让mark遮罩显示
+                $mark.stop().show();
+                //再让box2显示
+                $box2.stop().show();
+                move($img1, $mark, $img2, $box1,$box2,e)
+            }).on("mousemove",function (e) {
+                    $mark.stop().show();
+                    $box2.stop().show();
+                    move($img1, $mark, $img2, $box1,$box2,e);
+                }).on("mouseout",function (e) {
+                        $mark.stop().hide();
+                        $box2.stop().hide();
+                    })
+        }
+
+    function move($img1, $mark, $img2, $box1, $box2, e) {
+            //获取宽高
+            var img1Width = $img1.width();
+            var img1Height = $img1.height();
+            var img2Width = $img2.width();
+            var img2Height = $img2.height();
+            //遮罩的宽高
+            markW = img1Width / (img2Width / img1Width);
+            markH = img1Height / (img2Height / img1Height);
+            //鼠标区域距离
+            var l = e.pageX - $img1.offset().left - (markW / 2);
+            var t = e.pageY - $img1.offset().top - (markH / 2);
+            //图片比box1盒子小时候，图片居中，上下左右有空白区域，鼠标移动区域只允许图片上,鼠标移动区域往右下移动
+            //空白区域
+            var spaceL = ($box1.width() - img1Width) / 2,
+                spaceT = ($box1.height() - img1Height) / 2;
+            //最小值 （去掉空白）
+            var minL = spaceL,
+                minT = spaceT;
+            //最大值
+            var maxL = (img1Width - markW) + spaceL;
+            var maxT = (img1Height - markH) + spaceT;
+            l = l <= minL ? minL : (l >= maxL ? maxL : l);
+            t = t <= minT ? minT : (t >= maxT ? maxT : t);
+            //求图片比例
+            var zoomX = img2Width / img1Width;
+            var zoomY = img2Height / img1Height;
+
+            $mark.css({
+                width: markW,
+                height: markH,
+                left: l,
+                top: t
+            });
+            $box2.css({
+                width: img1Width,
+                height: img1Height
+            });
+            $img2.css({//大图没有空白，需要去掉
+                left: -(zoomX * (l - spaceL)),
+                top: -(zoomY * (t - spaceT))
+            });
+        }
+
+
+    $(function () {
+        Zoomhover($("#box1 img"), $("#mark"), $("#box2 img"), $("#box1"), $("#box2"));
+    });
+
+
+    //缩略图
+    $(".thumb-content li").click(function(){
+        var src = $(this).find("img").attr("src");
+        $("#box1 img").attr("src",src.replace("60x60","430x430"));
+        $("#box2 img").attr("src",src.replace("60x60", "800x800"));
+    });
+
+</script>
+</body>
+</html>
