@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .box{
+                width: 100px; height: 100px; margin: 0 auto; background: rgb(2, 54, 14); opacity: 0.6;
+                float: left; margin-left: 10px;
+            }
+    </style>
+    <script src="./yundong.js"></script>
+</head>
+<body>
+    <div class="box">1</div>
+    <div class="box">2</div>
+    <div class="box">3</div>
+    <div class="box">4</div>
+
+    <script>
+        var boxes = document.querySelectorAll(".box");
+        //循环遍历多个对象注册事件
+        for(var i=0; i<boxes.length; i++){
+            //移入移除改变透明度
+            boxes[i].onmouseover = function(){
+                //逐渐增加opacity，直到为1；    
+                startMove(this,"opacity",100);
+            }
+            boxes[i].onmouseout = function(){
+                //逐渐减小opacity，直到为0.6；
+                startMove(this,"opacity",60);
+            }
+        }
+        
+        
+        
+
+       /*  function startMove(obj,target){
+            //清除定时器 将timer作为obj的属性，（obj.timer） 因为要给每一个box定时器，清除时不会清除到其他box上的定时器
+            clearInterval(obj.timer);
+            //定义透明度num也要为每一个box单独设置，将num作为obj的属性
+            obj.num = 1;
+            //开启定时器
+            obj.timer = setInterval(function(){
+                if(obj.num == target){
+                clearInterval(obj.timer);
+            }else{
+                //速度 变速
+                var speed = (target - obj.num)/10;
+                if(target > obj.num){
+                    speed = Math.ceil(speed);
+                }else{
+                    speed = Math.floor(speed);
+                }
+                obj.num = obj.num + speed ;
+                obj.style.opacity = obj.num / 100;
+            }
+            },30);
+        } */
+    </script>
+</body>
+</html>
